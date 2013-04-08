@@ -1,4 +1,4 @@
-sadf	dsaf	sadf sdf
-122,213 	,231 123, 542
-			
-234
+#TID	Name	Employment	Rate	YTD	Start	End	Hours	Deduction
+11	A, B	Salaried	$52000	$0	2013-01-07	2013-01-13	40.0	$100
+216	C, D	Salaried	$52000	$750	2013-01-07	2013-01-13	45.0	$200
+31	X, Y	Hourly	$20.00	$400	2013-01-07	2013-01-13	42.5	$50.50
