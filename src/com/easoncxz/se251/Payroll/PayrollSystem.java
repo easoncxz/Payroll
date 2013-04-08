@@ -22,50 +22,44 @@ public class PayrollSystem {
 		Scanner scanner;
 
 		if (args.length == 0) {
-			// System.out.println("please provide the URI of the input file.");
-			// return;
+			System.out.println("please provide the URI of the input file.");
+			return;
 		}
 
-		// uri_str = args[0];
-		uri_str = "file:///C:/Users/Eason/Desktop/e.txt";
-		// uri_str = "c:\\users\\eason\\desktop\\e.txt";
+		uri_str = args[0];
+		// uri_str = "file:///D:/workspace/Payroll/e.txt";
 
 		try {
 			uri = new URI(uri_str);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		file = new File(uri);
-		try {
+			file = new File(uri);
 			fis = new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		isr = new InputStreamReader(fis); // assumes charset is the default
-		br = new BufferedReader(isr);
-		scanner = new Scanner(br);
+			isr = new InputStreamReader(fis); // assumes charset is the default
+			br = new BufferedReader(isr);
+			scanner = new Scanner(br);
 
-		// while (scanner.hasNext()) {
-		// System.out.println(scanner.next());
-		// }
-		// System.out.println("done!!!");
-		// scanner.close();
+			// while (scanner.hasNext()) {
+			// System.out.println(scanner.next());
+			// }
+			// System.out.println("done!!!");
+			// scanner.close();
 
-		try {
 			String l;
 			while ((l = br.readLine()) != null) {
-				System.out.println(l);
+				String[] lc = l.split("\\t");
+				for (String tmp_str : lc) {
+					System.out.print(tmp_str+"###");
+				}
+				System.out.println();
 			}
 			System.out.println("done!!!");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
-		try {
 			br.close();
 			isr.close();
 			fis.close();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
