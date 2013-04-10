@@ -1,14 +1,19 @@
 package com.easoncxz.se251.Payroll;
 
+/**
+ * This class consists of static members. It is created for code organization
+ * purpose.
+ * 
+ */
 public class Calculations {
 
 	static final double[] TAX_RATES = { 0.33, 0.3, 0.175, 0.105 };
 	static final double[] TAX_INCOME_THRESHOLDS = { 70000, 48000, 14000 };
 
-	static void resolveEmployeeFor(DataStore dataStore){
+	static void resolveEmployeeFor(DataStore dataStore) {
 		EmployeeList employeeList = dataStore.getEmployeeList();
-		
 		for (Employee employee : employeeList) {
+			// in the future, this if-statement could/should be replaced by using type relations
 			if (employee.getEmployment() == Employee.EmploymentType.Salaried) {
 				employee.setAnnualGross(employee.getRate());
 				employee.setWeekGross(employee.getAnnualGross() / 52);
@@ -24,7 +29,6 @@ public class Calculations {
 				// shouldn't be reached
 			}
 		}
-
 	}
 
 	static double calcTaxAnnual(double gross) {
@@ -46,10 +50,10 @@ public class Calculations {
 			// should not be reached
 			return gross;
 		}
-
 	}
 
 	static double calcWeeklyFromHours(double rate, double hours) {
+		// 'magic' numbers below could be recorded as constants instead
 		if (hours > 43) {
 			return (hours - 43) * rate * 2 + calcWeeklyFromHours(rate, 43);
 		} else if (hours <= 43 & hours > 40) {
@@ -61,5 +65,5 @@ public class Calculations {
 			return -0.618; // random value
 		}
 	}
-
+	
 }

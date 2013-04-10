@@ -1,5 +1,9 @@
 package com.easoncxz.se251.Payroll;
 
+/**
+ * Main entry point of the programme.
+ *
+ */
 public class PayrollSystem {
 
 	public static void main(String[] args) {

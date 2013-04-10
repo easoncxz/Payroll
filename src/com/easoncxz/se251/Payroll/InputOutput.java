@@ -16,6 +16,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * This class consists of static members. This class is created for organization
+ * purpose.
+ * 
+ */
 public class InputOutput {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd");
@@ -23,7 +28,7 @@ public class InputOutput {
 
 	static void produceOutputFrom(DataStore dataStore) {
 		println((new Date()).toString());
-		
+
 		EmployeeList employeeList = dataStore.getEmployeeList();
 
 		for (Employee employee : employeeList) {
@@ -80,7 +85,7 @@ public class InputOutput {
 				String tidStr, nameInStr, employmentStr, rateStr, ytdStr, dateStartStr, dateEndStr, hoursStr, deductionStr;
 
 				int tid;
-				Name name;
+				Employee.Name name;
 				Employee.EmploymentType employment;
 				double rate;
 				double ytd;
@@ -102,8 +107,8 @@ public class InputOutput {
 				tid = Integer.parseInt(tidStr);
 				String lastName = nameInStr.split(", ")[0];
 				String firstName = nameInStr.split(", ")[1];
-				
-				name = new Name(firstName, lastName);
+
+				name = new Employee.Name(firstName, lastName);
 				employment = Employee.EmploymentType.valueOf(employmentStr);
 				rate = Double.parseDouble(rateStr.substring(1));
 				ytd = Double.parseDouble(ytdStr.substring(1));
@@ -117,7 +122,7 @@ public class InputOutput {
 				employeeList.addEmployee(employee);
 			}
 
-			 dataStore.saveEmployeeList(employeeList);
+			dataStore.saveEmployeeList(employeeList);
 
 			br.close();
 			isr.close();

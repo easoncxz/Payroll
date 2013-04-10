@@ -3,25 +3,42 @@ package com.easoncxz.se251.Payroll;
 import java.util.Comparator;
 import java.util.Date;
 
-public class Employee{
+/**
+ * This is a storage class which stores all the information regarding a
+ * particular employee. It does not have any methods except getters/setters.
+ * 
+ */
+public class Employee {
 	public enum EmploymentType {
 		Salaried, Hourly
 	};
-	
-	public static class FamilyNameAscComparator implements Comparator<Employee>{
+
+	public static class FamilyNameAscComparator implements Comparator<Employee> {
 		@Override
 		public int compare(Employee o1, Employee o2) {
-			return o1.name.getLastName().compareToIgnoreCase(o2.name.getLastName());
+			return o1.name.getLastName().compareToIgnoreCase(
+					o2.name.getLastName());
 		}
-		
+
 	}
 
-	// public Employee() {
-	// this.name = new Name("John", "Doe");
-	// this.employment = EmploymentType.Salaried;
-	// this.tid = 0;
-	// }
-	// public Employee(Name name, EmploymentType employment, int tid) {
+	public static class Name {
+		private final String firstName, lastName;
+
+		public Name(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
+
+		public String getFirstName() {
+			return firstName;
+		}
+
+		public String getLastName() {
+			return lastName;
+		}
+	}
+
 	public Employee(Name name, EmploymentType employment, int tid,
 			double ytdStart, Date dateStart, Date dateEnd, double hours,
 			double deduction, double rate) {
