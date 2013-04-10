@@ -8,9 +8,6 @@ public class Name {
 		this.lastName = lastName;
 	}
 
-	// public String get
-
-	// generated getters & setters below
 	public String getFirstName() {
 		return firstName;
 	}

@@ -1,29 +1,26 @@
 package com.easoncxz.se251.Payroll;
 
+import java.util.Comparator;
 import java.util.Date;
 
-public class Employee {
+public class Employee{
 	public enum EmploymentType {
 		Salaried, Hourly
 	};
-
-	private final int tid;
-	private final Name name;
-	private final EmploymentType employment;
-	private double ytdStart, ytdEnd;
-	private Date dateStart, dateEnd;
-	private double hours;
-	private double deduction;
-	private double rate;
-
-	private double annualGross, annualTax, weekGross, weekTax, nett;
+	
+	public static class FamilyNameAscComparator implements Comparator<Employee>{
+		@Override
+		public int compare(Employee o1, Employee o2) {
+			return o1.name.getLastName().compareToIgnoreCase(o2.name.getLastName());
+		}
+		
+	}
 
 	// public Employee() {
 	// this.name = new Name("John", "Doe");
 	// this.employment = EmploymentType.Salaried;
 	// this.tid = 0;
 	// }
-
 	// public Employee(Name name, EmploymentType employment, int tid) {
 	public Employee(Name name, EmploymentType employment, int tid,
 			double ytdStart, Date dateStart, Date dateEnd, double hours,
@@ -39,6 +36,12 @@ public class Employee {
 		this.rate = rate;
 	}
 
+	private final int tid;
+	private final Name name;
+	private final EmploymentType employment;
+	private Date dateStart, dateEnd;
+	private double ytdStart, ytdEnd, hours, deduction, rate, annualGross,
+			annualTax, weekGross, weekTax, nett;
 
 	// generated getters & setters below
 	public double getYtdStart() {
@@ -141,14 +144,12 @@ public class Employee {
 		return employment;
 	}
 
-
 	public double getNett() {
 		return nett;
 	}
 
-
 	public void setNett(double nett) {
 		this.nett = nett;
 	}
-	
+
 }

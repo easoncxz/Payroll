@@ -1,0 +1,145 @@
+package com.easoncxz.se251.Payroll;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
+
+public class InputOutput {
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
+			"yyyy-MM-dd");
+	private static DecimalFormat decimalFormat = new DecimalFormat("0.00");
+
+	static void produceOutputFrom(DataStore dataStore) {
+		println((new Date()).toString());
+		
+		EmployeeList employeeList = dataStore.getEmployeeList();
+
+		for (Employee employee : employeeList) {
+			employee.setNett(employee.getWeekGross() - employee.getWeekTax()
+					- employee.getDeduction());
+			employee.setYtdEnd(employee.getYtdStart() + employee.getWeekGross());
+
+			print(employee.getName().getFirstName());
+			print(" ");
+			print(employee.getName().getLastName());
+			print(" (");
+			print(employee.getTid());
+			print(") Period: ");
+			print(dateFormat.format(employee.getDateStart()));
+			print(" to ");
+			print(dateFormat.format(employee.getDateEnd()));
+			print(". Gross: $");
+			print(decimalFormat.format(employee.getWeekGross()));
+			print(", PAYE: $");
+			print(decimalFormat.format(employee.getWeekTax()));
+			print(", Deductions: $");
+			print(decimalFormat.format(employee.getWeekTax()));
+			print(" Nett: $");
+			print(decimalFormat.format(employee.getNett()));
+			print(" YTD: $");
+			print(decimalFormat.format(employee.getNett()));
+			println("");
+		}
+	}
+
+	static void readInputTo(String uri_str, DataStore dataStore) {
+		URI uri = null;
+		File file = null;
+		FileInputStream fis = null;
+		InputStreamReader isr;
+		BufferedReader br;
+		// Scanner scanner;
+
+		EmployeeList employeeList = new EmployeeList();
+
+		try {
+			uri = new URI(uri_str);
+			file = new File(uri);
+			fis = new FileInputStream(file);
+			isr = new InputStreamReader(fis); // assumes charset is the default
+			br = new BufferedReader(isr);
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+
+				String tidStr, nameInStr, employmentStr, rateStr, ytdStr, dateStartStr, dateEndStr, hoursStr, deductionStr;
+
+				int tid;
+				Name name;
+				Employee.EmploymentType employment;
+				double rate;
+				double ytd;
+				Date dateStart, dateEnd;
+				double hours;
+				double deduction;
+
+				String[] lineComponents = line.split("\\t");
+
+				tidStr = lineComponents[0];
+				nameInStr = lineComponents[1];
+				employmentStr = lineComponents[2];
+				rateStr = lineComponents[3];
+				ytdStr = lineComponents[4];
+				dateStartStr = lineComponents[5];
+				dateEndStr = lineComponents[6];
+				hoursStr = lineComponents[7];
+				deductionStr = lineComponents[8];
+				tid = Integer.parseInt(tidStr);
+				String lastName = nameInStr.split(", ")[0];
+				String firstName = nameInStr.split(", ")[1];
+				
+				name = new Name(firstName, lastName);
+				employment = Employee.EmploymentType.valueOf(employmentStr);
+				rate = Double.parseDouble(rateStr.substring(1));
+				ytd = Double.parseDouble(ytdStr.substring(1));
+				dateStart = dateFormat.parse(dateStartStr);
+				dateEnd = dateFormat.parse(dateEndStr);
+				hours = Double.parseDouble(hoursStr);
+				deduction = Double.parseDouble(deductionStr.substring(1));
+
+				Employee employee = new Employee(name, employment, tid, ytd,
+						dateStart, dateEnd, hours, deduction, rate);
+				employeeList.addEmployee(employee);
+			}
+
+			 dataStore.saveEmployeeList(employeeList);
+
+			br.close();
+			isr.close();
+			fis.close();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	// scaffolding assist below
+	static <T> void println(T o) {
+		System.out.println(o);
+	}
+
+	static <T> void print(T o) {
+		System.out.print(o);
+	}
+}
