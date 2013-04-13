@@ -7,29 +7,10 @@ package com.easoncxz.se251.Payroll;
  */
 public class Calculations {
 
-	static final double[] TAX_RATES = { 0.33, 0.3, 0.175, 0.105 };
-	static final double[] TAX_INCOME_THRESHOLDS = { 70000, 48000, 14000 };
-
-	static void resolveEmployeeFor(DataStore dataStore) {
-		EmployeeList employeeList = dataStore.getEmployeeList();
-		for (Employee employee : employeeList) {
-			// in the future, this if-statement could/should be replaced by using type relations
-			if (employee.getEmployment() == Employee.EmploymentType.Salaried) {
-				employee.setAnnualGross(employee.getRate());
-				employee.setWeekGross(employee.getAnnualGross() / 52);
-				employee.setAnnualTax(calcTaxAnnual(employee.getAnnualTax()));
-				employee.setWeekTax(employee.getAnnualTax() / 52);
-			} else if (employee.getEmployment() == Employee.EmploymentType.Hourly) {
-				employee.setWeekGross(calcWeeklyFromHours(employee.getRate(),
-						employee.getHours()));
-				employee.setAnnualGross(employee.getWeekGross() * 52);
-				employee.setAnnualTax(calcTaxAnnual(employee.getAnnualGross()));
-				employee.setWeekTax(employee.getAnnualTax() / 52);
-			} else {
-				// shouldn't be reached
-			}
-		}
-	}
+	static final double[] TAX_RATES = { 0.33, 0.3, 0.175, 0.105 },
+			TAX_INCOME_THRESHOLDS = { 70000, 48000, 14000 },
+			HOURLY_MULTIPLIERS = {2,1.5,1},
+			HOURLY_THRESHOLDS = {43,40};
 
 	static double calcTaxAnnual(double gross) {
 		gross = Math.floor(gross);
@@ -65,5 +46,5 @@ public class Calculations {
 			return -0.618; // random value
 		}
 	}
-	
+
 }

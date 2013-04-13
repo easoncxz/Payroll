@@ -11,10 +11,7 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * This class consists of static members. This class is created for organization
@@ -26,7 +23,11 @@ public class InputOutput {
 			"yyyy-MM-dd");
 	private static DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
-	static void produceOutputFrom(DataStore dataStore) {
+	/**
+	 * produce a formatted output according to data from the given dataStore
+	 * @param dataStore the dataStore whose data should be written out
+	 */
+	static void writeFrom(DataStore dataStore) {
 		println((new Date()).toString());
 
 		EmployeeList employeeList = dataStore.getEmployeeList();
@@ -50,16 +51,23 @@ public class InputOutput {
 			print(", PAYE: $");
 			print(decimalFormat.format(employee.getWeekTax()));
 			print(", Deductions: $");
-			print(decimalFormat.format(employee.getWeekTax()));
+			print(decimalFormat.format(employee.getDeduction()));
 			print(" Nett: $");
 			print(decimalFormat.format(employee.getNett()));
 			print(" YTD: $");
-			print(decimalFormat.format(employee.getNett()));
+			print(decimalFormat.format(employee.getYtdEnd()));
 			println("");
 		}
 	}
 
-	static void readInputTo(String uri_str, DataStore dataStore) {
+	/**
+	 * reads(parses) the contents of a file and stores it into a certain dataStore.
+	 * @param uri_str 
+	 * the full URI of the input file
+	 * @param dataStore 
+	 * the dataStore into which the data should be stored
+	 */
+	static void readTo(String uri_str, DataStore dataStore) {
 		URI uri = null;
 		File file = null;
 		FileInputStream fis = null;
