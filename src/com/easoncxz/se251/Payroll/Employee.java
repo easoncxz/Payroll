@@ -3,12 +3,19 @@ package com.easoncxz.se251.Payroll;
 import java.util.Comparator;
 import java.util.Date;
 
+import com.easoncxz.se251.Payroll.Employee.Name;
+
 /**
  * This is a storage class which stores all the information regarding a
  * particular employee. It does not have any methods except getters/setters.
  * 
  */
-public class Employee {
+/**
+ * @author Eason
+ *
+ */
+public abstract class Employee {
+
 	public enum EmploymentType {
 		Salaried, Hourly
 	};
@@ -39,134 +46,140 @@ public class Employee {
 		}
 	}
 
-	public Employee(Name name, EmploymentType employment, int tid,
-			double ytdStart, Date dateStart, Date dateEnd, double hours,
-			double deduction, double rate) {
+	/**
+	 * @param name
+	 * @param tid
+	 * @param ytdStart
+	 * @param dateStart
+	 * @param dateEnd
+	 * @param hours
+	 * @param weekDeduction
+	 * @param rate
+	 */
+	public Employee(Name name, int tid, double ytdStart, Date dateStart,
+			Date dateEnd, double hours, double weekDeduction, double rate) {
 		this.tid = tid;
 		this.name = name;
-		this.employment = employment;
+		// this.employment = employment;
 		this.ytdStart = ytdStart;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
 		this.hours = hours;
-		this.deduction = deduction;
+		this.weekDeduction = weekDeduction;
 		this.rate = rate;
 	}
+
+	public void completeFields() {
+		setGross();
+		setTax();
+		setWeekNett();
+		setYTD();
+	}
+
+	/**
+	 * sets annualGross and weekGross fields to correct values
+	 */
+	public abstract void setGross();
+
+	/**
+	 * sets annualTax and weekTax fields to correct values
+	 */
+	public abstract void setTax();
+
+	public void setWeekNett() {
+		weekNett = weekGross - weekTax - weekDeduction;
+	}
+	
+	public void setYTD(){
+		ytdEnd = ytdStart + weekGross;
+	}
+
+	/**
+	 * @param gross
+	 *            - the annual gross. has to be positive.
+	 * @return the annual PAYE tax
+	 */
+	public static double calcPAYE(double gross) {
+		gross = Math.floor(gross);
+		if (gross > TAX_INCOME_THRESHOLDS[0]) {
+			return (gross - TAX_INCOME_THRESHOLDS[0]) * TAX_RATES[0]
+					+ calcPAYE(TAX_INCOME_THRESHOLDS[0]);
+		} else if (gross <= TAX_INCOME_THRESHOLDS[0]
+				&& gross > TAX_INCOME_THRESHOLDS[1]) {
+			return (gross - TAX_INCOME_THRESHOLDS[1]) * TAX_RATES[1]
+					+ calcPAYE(TAX_INCOME_THRESHOLDS[1]);
+		} else if (gross <= TAX_INCOME_THRESHOLDS[1]
+				&& gross > TAX_INCOME_THRESHOLDS[2]) {
+			return (gross - TAX_INCOME_THRESHOLDS[2]) * TAX_RATES[2]
+					+ calcPAYE(TAX_INCOME_THRESHOLDS[2]);
+		} else if (gross <= TAX_INCOME_THRESHOLDS[2] && gross > 0) {
+			return gross * TAX_RATES[3];
+		} else {
+			throw new RuntimeException("annual gross should be positive");
+		}
+	}
+
+	private static final double[] TAX_RATES = { 0.33, 0.3, 0.175, 0.105 },
+			TAX_INCOME_THRESHOLDS = { 70000, 48000, 14000 };
 
 	private final int tid;
 	private final Name name;
-	private final EmploymentType employment;
+	
 	private Date dateStart, dateEnd;
-	private double ytdStart, ytdEnd, hours, deduction, rate, annualGross,
-			annualTax, weekGross, weekTax, nett;
+	private double ytdStart;
 
-	// generated getters & setters below
-	public double getYtdStart() {
-		return ytdStart;
-	}
+	private double weekDeduction;
 
-	public void setYtdStart(double ytdStart) {
-		this.ytdStart = ytdStart;
-	}
+	private double weekNett;
 
-	public double getYtdEnd() {
-		return ytdEnd;
-	}
+	protected double ytdEnd;
 
-	public void setYtdEnd(double ytdEnd) {
-		this.ytdEnd = ytdEnd;
-	}
+	protected double hours;
 
-	public Date getDateStart() {
-		return dateStart;
-	}
+	protected double rate;
 
-	public void setDateStart(Date dateStart) {
-		this.dateStart = dateStart;
-	}
+	protected double annualGross;
 
-	public Date getDateEnd() {
-		return dateEnd;
-	}
+	protected double annualTax;
 
-	public void setDateEnd(Date dateEnd) {
-		this.dateEnd = dateEnd;
-	}
+	protected double weekGross;
 
-	public double getHours() {
-		return hours;
-	}
-
-	public void setHours(double hours) {
-		this.hours = hours;
-	}
-
-	public double getDeduction() {
-		return deduction;
-	}
-
-	public void setDeduction(double deduction) {
-		this.deduction = deduction;
-	}
-
-	public double getRate() {
-		return rate;
-	}
-
-	public void setRate(double rate) {
-		this.rate = rate;
-	}
-
-	public double getAnnualGross() {
-		return annualGross;
-	}
-
-	public void setAnnualGross(double annualGross) {
-		this.annualGross = annualGross;
-	}
-
-	public double getAnnualTax() {
-		return annualTax;
-	}
-
-	public void setAnnualTax(double annualTax) {
-		this.annualTax = annualTax;
-	}
+	protected double weekTax;
 
 	public double getWeekGross() {
 		return weekGross;
-	}
-
-	public void setWeekGross(double weekGross) {
-		this.weekGross = weekGross;
 	}
 
 	public double getWeekTax() {
 		return weekTax;
 	}
 
-	public void setWeekTax(double weekTax) {
-		this.weekTax = weekTax;
-	}
-
-	public int getTid() {
-		return tid;
+	public double getWeekDeduction() {
+		return weekDeduction;
 	}
 
 	public Name getName() {
 		return name;
 	}
 
-	public EmploymentType getEmployment() {
-		return employment;
+	public int getTid() {
+		return tid;
 	}
 
-	public double getNett() {
-		return nett;
+	public Date getDateStart() {
+		return dateStart;
 	}
 
-	public void setNett(double nett) {
-		this.nett = nett;
+	public Date getDateEnd() {
+		return dateEnd;
+	}
+
+	public double getWeekNett() {
+		return weekNett;
+	}
+
+	public double getYtdEnd() {
+		return ytdEnd;
 	}
 
 }

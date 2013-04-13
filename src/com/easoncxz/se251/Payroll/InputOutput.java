@@ -13,6 +13,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.easoncxz.se251.Payroll.Employee.EmploymentType;
+
 /**
  * This class consists of static members. This class is created for organization
  * purpose.
@@ -25,17 +27,16 @@ public class InputOutput {
 
 	/**
 	 * produce a formatted output according to data from the given dataStore
-	 * @param dataStore the dataStore whose data should be written out
+	 * 
+	 * @param dataStore
+	 *            the dataStore whose data should be written out
 	 */
-	static void writeFrom(DataStore dataStore) {
+	public static void writeFrom(DataStore dataStore) {
 		println((new Date()).toString());
 
 		EmployeeList employeeList = dataStore.getEmployeeList();
 
 		for (Employee employee : employeeList) {
-			employee.setNett(employee.getWeekGross() - employee.getWeekTax()
-					- employee.getDeduction());
-			employee.setYtdEnd(employee.getYtdStart() + employee.getWeekGross());
 
 			print(employee.getName().getFirstName());
 			print(" ");
@@ -51,9 +52,9 @@ public class InputOutput {
 			print(", PAYE: $");
 			print(decimalFormat.format(employee.getWeekTax()));
 			print(", Deductions: $");
-			print(decimalFormat.format(employee.getDeduction()));
+			print(decimalFormat.format(employee.getWeekDeduction()));
 			print(" Nett: $");
-			print(decimalFormat.format(employee.getNett()));
+			print(decimalFormat.format(employee.getWeekNett()));
 			print(" YTD: $");
 			print(decimalFormat.format(employee.getYtdEnd()));
 			println("");
@@ -61,13 +62,15 @@ public class InputOutput {
 	}
 
 	/**
-	 * reads(parses) the contents of a file and stores it into a certain dataStore.
-	 * @param uri_str 
-	 * the full URI of the input file
-	 * @param dataStore 
-	 * the dataStore into which the data should be stored
+	 * reads(parses) the contents of a file and stores it into a certain
+	 * dataStore.
+	 * 
+	 * @param uri_str
+	 *            the full URI of the input file
+	 * @param dataStore
+	 *            the dataStore into which the data should be stored
 	 */
-	static void readTo(String uri_str, DataStore dataStore) {
+	public static void readTo(String uri_str, DataStore dataStore) {
 		URI uri = null;
 		File file = null;
 		FileInputStream fis = null;
@@ -125,9 +128,17 @@ public class InputOutput {
 				hours = Double.parseDouble(hoursStr);
 				deduction = Double.parseDouble(deductionStr.substring(1));
 
-				Employee employee = new Employee(name, employment, tid, ytd,
-						dateStart, dateEnd, hours, deduction, rate);
-				employeeList.addEmployee(employee);
+				// Employee employee = new Employee(name, employment, tid, ytd,
+				// dateStart, dateEnd, hours, deduction, rate);
+				if (employment == EmploymentType.Hourly) {
+					employeeList.addEmployee(new EmployeeHourly(name, tid, ytd,
+							dateStart, dateEnd, hours, deduction, rate));
+				} else if (employment == EmploymentType.Salaried) {
+					employeeList.addEmployee(new EmployeeSalaried(name, tid,
+							ytd, dateStart, dateEnd, hours, deduction, rate));
+				} else {
+					throw new RuntimeException("invalid type of employment");
+				}
 			}
 
 			dataStore.saveEmployeeList(employeeList);
@@ -147,12 +158,11 @@ public class InputOutput {
 
 	}
 
-	// scaffolding assist below
-	static <T> void println(T o) {
+	public static <T> void println(T o) {
 		System.out.println(o);
 	}
 
-	static <T> void print(T o) {
+	public static <T> void print(T o) {
 		System.out.print(o);
 	}
 }

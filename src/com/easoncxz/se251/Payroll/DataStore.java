@@ -17,28 +17,13 @@ public class DataStore {
 		this.employeeList = employeeList;
 	}
 
+	/**
+	 * set all employees' calculation result fields to correct values, according
+	 * to the inputed fields of the employee
+	 */
 	public void completeFields() {
 		for (Employee employee : employeeList) {
-			// in the future, this if-statement could/should be replaced by
-			// using type relations
-			if (employee.getEmployment() == Employee.EmploymentType.Salaried) {
-				employee.setAnnualGross(employee.getRate());
-				employee.setWeekGross(employee.getAnnualGross() / 52);
-				employee.setAnnualTax(Calculations.calcTaxAnnual(employee
-						.getAnnualGross()));
-				employee.setWeekTax(employee.getAnnualTax() / 52);
-			} else if (employee.getEmployment() == Employee.EmploymentType.Hourly) {
-				employee.setWeekGross(Calculations.calcWeeklyFromHours(
-						employee.getRate(), employee.getHours()));
-				employee.setAnnualGross(employee.getWeekGross() * 52);
-				employee.setAnnualTax(Calculations.calcTaxAnnual(employee
-						.getAnnualGross()));
-				employee.setWeekTax(employee.getAnnualTax() / 52);
-			} else {
-				// shouldn't be reached
-				throw new RuntimeException("invalid employment type");
-			}
-			employee.setYtdEnd(employee.getYtdStart() + employee.getWeekGross());
+			employee.completeFields();
 		}
 	}
 }
