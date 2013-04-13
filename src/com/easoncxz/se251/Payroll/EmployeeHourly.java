@@ -2,6 +2,9 @@ package com.easoncxz.se251.Payroll;
 
 import java.util.Date;
 
+/**
+ * specifies some calculation methods.
+ */
 public class EmployeeHourly extends Employee {
 
 	public EmployeeHourly(Name name, int tid, double ytdStart, Date dateStart,
@@ -10,7 +13,10 @@ public class EmployeeHourly extends Employee {
 	}
 
 	/**
+	 * @deprecated - because better algorithm should be used in order to easily
+	 *             adapt to a change in the number of threshold values.
 	 * @param rate
+	 *            - the input-given value
 	 * @param hours
 	 *            - this should be positive
 	 * @return weekly gross income
@@ -27,7 +33,7 @@ public class EmployeeHourly extends Employee {
 		} else if (hours <= HOURLY_THRESHOLDS[1] & hours > 0) {
 			return (hours * rate * HOURLY_MULTIPLIERS[2]);
 		} else {
-			throw new RuntimeException("hours should be positive");
+			throw new RuntimeException("the developer was an idiot.");
 		}
 	}
 
@@ -37,6 +43,7 @@ public class EmployeeHourly extends Employee {
 		annualGross = weekGross * 52;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setTax() {
 		annualTax = calcPAYE(annualGross);

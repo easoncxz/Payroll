@@ -2,6 +2,9 @@ package com.easoncxz.se251.Payroll;
 
 import java.util.Date;
 
+/**
+ * specifies some calculation methods.
+ */
 public class EmployeeSalaried extends Employee {
 
 	public EmployeeSalaried(Name name, int tid, double ytdStart,
@@ -16,6 +19,7 @@ public class EmployeeSalaried extends Employee {
 		weekGross = annualGross / 52;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setTax() {
 		annualTax = calcPAYE(annualGross);

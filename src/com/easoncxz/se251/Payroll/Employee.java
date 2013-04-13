@@ -3,16 +3,9 @@ package com.easoncxz.se251.Payroll;
 import java.util.Comparator;
 import java.util.Date;
 
-import com.easoncxz.se251.Payroll.Employee.Name;
-
 /**
- * This is a storage class which stores all the information regarding a
- * particular employee. It does not have any methods except getters/setters.
- * 
- */
-/**
- * @author Eason
- *
+ * Stores input-given data regarding a particular employee, and is responsible
+ * for providing calculation-result data.
  */
 public abstract class Employee {
 
@@ -37,16 +30,19 @@ public abstract class Employee {
 			this.lastName = lastName;
 		}
 
-		public String getFirstName() {
-			return firstName;
-		}
-
 		public String getLastName() {
 			return lastName;
+		}
+
+		public String getOutputFormatted() {
+			return firstName + " " + lastName;
 		}
 	}
 
 	/**
+	 * This constructor sets all input-given fields. The input-given fields are
+	 * modified to be final.
+	 * 
 	 * @param name
 	 * @param tid
 	 * @param ytdStart
@@ -60,7 +56,6 @@ public abstract class Employee {
 			Date dateEnd, double hours, double weekDeduction, double rate) {
 		this.tid = tid;
 		this.name = name;
-		// this.employment = employment;
 		this.ytdStart = ytdStart;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
@@ -69,6 +64,10 @@ public abstract class Employee {
 		this.rate = rate;
 	}
 
+	/**
+	 * According to the input-given fields of this employee, set the
+	 * calculation-result fields.
+	 */
 	public void completeFields() {
 		setGross();
 		setTax();
@@ -77,29 +76,31 @@ public abstract class Employee {
 	}
 
 	/**
-	 * sets annualGross and weekGross fields to correct values
+	 * sets the annualGross and weekGross fields.
 	 */
-	public abstract void setGross();
+	protected abstract void setGross();
 
 	/**
-	 * sets annualTax and weekTax fields to correct values
+	 * sets the annualTax and weekTax fields.
 	 */
-	public abstract void setTax();
+	protected abstract void setTax();
 
-	public void setWeekNett() {
+	private void setWeekNett() {
 		weekNett = weekGross - weekTax - weekDeduction;
 	}
-	
-	public void setYTD(){
+
+	private void setYTD() {
 		ytdEnd = ytdStart + weekGross;
 	}
 
 	/**
+	 * @deprecated - because better algorithm should be used in order to easily
+	 *             adapt to a change in the number of threshold values.
 	 * @param gross
 	 *            - the annual gross. has to be positive.
 	 * @return the annual PAYE tax
 	 */
-	public static double calcPAYE(double gross) {
+	protected static double calcPAYE(double gross) {
 		gross = Math.floor(gross);
 		if (gross > TAX_INCOME_THRESHOLDS[0]) {
 			return (gross - TAX_INCOME_THRESHOLDS[0]) * TAX_RATES[0]
@@ -115,7 +116,7 @@ public abstract class Employee {
 		} else if (gross <= TAX_INCOME_THRESHOLDS[2] && gross > 0) {
 			return gross * TAX_RATES[3];
 		} else {
-			throw new RuntimeException("annual gross should be positive");
+			throw new RuntimeException("the developer was an idiot");
 		}
 	}
 
@@ -124,19 +125,19 @@ public abstract class Employee {
 
 	private final int tid;
 	private final Name name;
-	
-	private Date dateStart, dateEnd;
-	private double ytdStart;
+
+	private final Date dateStart, dateEnd;
+	private final double ytdStart;
+
+	protected final double hours;
+
+	protected final double rate;
 
 	private double weekDeduction;
 
 	private double weekNett;
 
 	protected double ytdEnd;
-
-	protected double hours;
-
-	protected double rate;
 
 	protected double annualGross;
 

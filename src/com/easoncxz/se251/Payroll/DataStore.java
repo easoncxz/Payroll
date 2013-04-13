@@ -2,7 +2,7 @@ package com.easoncxz.se251.Payroll;
 
 /**
  * This class is currently just a wrapper around EmployeeList.
- * 
+ * <p>
  * It could be changed later to interact with a database etc, build an
  * EmployeeList object on-the-fly, and return this EmployeeList object.
  */
@@ -18,8 +18,8 @@ public class DataStore {
 	}
 
 	/**
-	 * set all employees' calculation result fields to correct values, according
-	 * to the inputed fields of the employee
+	 * set all employees' calculation-result fields according to their
+	 * input-given fields.
 	 */
 	public void completeFields() {
 		for (Employee employee : employeeList) {

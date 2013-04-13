@@ -18,7 +18,6 @@ import com.easoncxz.se251.Payroll.Employee.EmploymentType;
 /**
  * This class consists of static members. This class is created for organization
  * purpose.
- * 
  */
 public class InputOutput {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -31,16 +30,11 @@ public class InputOutput {
 	 * @param dataStore
 	 *            the dataStore whose data should be written out
 	 */
-	public static void writeFrom(DataStore dataStore) {
+	public static void formatFrom(DataStore dataStore) {
 		println((new Date()).toString());
-
 		EmployeeList employeeList = dataStore.getEmployeeList();
-
 		for (Employee employee : employeeList) {
-
-			print(employee.getName().getFirstName());
-			print(" ");
-			print(employee.getName().getLastName());
+			print(employee.getName().getOutputFormatted());
 			print(" (");
 			print(employee.getTid());
 			print(") Period: ");
@@ -70,13 +64,12 @@ public class InputOutput {
 	 * @param dataStore
 	 *            the dataStore into which the data should be stored
 	 */
-	public static void readTo(String uri_str, DataStore dataStore) {
+	public static void parseTo(String uri_str, DataStore dataStore) {
 		URI uri = null;
 		File file = null;
 		FileInputStream fis = null;
 		InputStreamReader isr;
 		BufferedReader br;
-		// Scanner scanner;
 
 		EmployeeList employeeList = new EmployeeList();
 
@@ -86,58 +79,91 @@ public class InputOutput {
 			fis = new FileInputStream(file);
 			isr = new InputStreamReader(fis); // assumes charset is the default
 			br = new BufferedReader(isr);
-
 			String line;
 			while ((line = br.readLine()) != null) {
 				if (line.charAt(0) == '#') {
 					continue;
 				}
 
-				String tidStr, nameInStr, employmentStr, rateStr, ytdStr, dateStartStr, dateEndStr, hoursStr, deductionStr;
+				String tidStr, nameStr, employmentStr, rateStr, ytdStartStr, dateStartStr, dateEndStr, hoursStr, weekDeductionStr;
 
 				int tid;
 				Employee.Name name;
 				Employee.EmploymentType employment;
 				double rate;
-				double ytd;
+				double ytdStart;
 				Date dateStart, dateEnd;
 				double hours;
-				double deduction;
+				double weekDeduction;
 
 				String[] lineComponents = line.split("\\t");
 
 				tidStr = lineComponents[0];
-				nameInStr = lineComponents[1];
+				nameStr = lineComponents[1];
 				employmentStr = lineComponents[2];
 				rateStr = lineComponents[3];
-				ytdStr = lineComponents[4];
+				ytdStartStr = lineComponents[4];
 				dateStartStr = lineComponents[5];
 				dateEndStr = lineComponents[6];
 				hoursStr = lineComponents[7];
-				deductionStr = lineComponents[8];
-				tid = Integer.parseInt(tidStr);
-				String lastName = nameInStr.split(", ")[0];
-				String firstName = nameInStr.split(", ")[1];
+				weekDeductionStr = lineComponents[8];
 
+				tid = Integer.parseInt(tidStr);
+				String lastName = nameStr.split(", ")[0];
+				String firstName = nameStr.split(", ")[1];
 				name = new Employee.Name(firstName, lastName);
-				employment = Employee.EmploymentType.valueOf(employmentStr);
+				try {
+					employment = Employee.EmploymentType.valueOf(employmentStr);
+				} catch (IllegalArgumentException e) {
+					println("the employment-type is invalid for employee \""
+							+ name.getOutputFormatted() + "\".");
+					br.close();
+					isr.close();
+					fis.close();
+					return;
+				}
 				rate = Double.parseDouble(rateStr.substring(1));
-				ytd = Double.parseDouble(ytdStr.substring(1));
+				ytdStart = Double.parseDouble(ytdStartStr.substring(1));
+				// try {
 				dateStart = dateFormat.parse(dateStartStr);
 				dateEnd = dateFormat.parse(dateEndStr);
+				// } catch (ParseException e) {
+				// println("your date format is invalid for employee \""
+				// + name.getOutputFormatted() + "\"");
+				// // e.printStackTrace();
+				// }
 				hours = Double.parseDouble(hoursStr);
-				deduction = Double.parseDouble(deductionStr.substring(1));
+				weekDeduction = Double.parseDouble(weekDeductionStr
+						.substring(1));
 
-				// Employee employee = new Employee(name, employment, tid, ytd,
-				// dateStart, dateEnd, hours, deduction, rate);
+				if (rate <= 0) {
+					println("the rate value should be positive. it seems that rate for employee \""
+							+ name.getOutputFormatted() + "\" is not positive.");
+					br.close();
+					isr.close();
+					fis.close();
+					return;
+				}
+				if (hours <= 0) {
+					println("the hours value should be positive. it seems that hours for employee \""
+							+ name.getOutputFormatted() + "\" is not positive.");
+					br.close();
+					isr.close();
+					fis.close();
+					return;
+				}
+
 				if (employment == EmploymentType.Hourly) {
-					employeeList.addEmployee(new EmployeeHourly(name, tid, ytd,
-							dateStart, dateEnd, hours, deduction, rate));
+					employeeList.addEmployee(new EmployeeHourly(name, tid,
+							ytdStart, dateStart, dateEnd, hours, weekDeduction,
+							rate));
 				} else if (employment == EmploymentType.Salaried) {
 					employeeList.addEmployee(new EmployeeSalaried(name, tid,
-							ytd, dateStart, dateEnd, hours, deduction, rate));
+							ytdStart, dateStart, dateEnd, hours, weekDeduction,
+							rate));
 				} else {
-					throw new RuntimeException("invalid type of employment");
+					// unreachable
+					throw new RuntimeException("the developer was an idiot.");
 				}
 			}
 
@@ -147,12 +173,16 @@ public class InputOutput {
 			isr.close();
 			fis.close();
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			println("your URI was invalid/incomplete.");
+			// e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			println("no file found by your URI");
+			// e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
+			// println("your date format is invalid for a certain employee");
+			// ^ couldn't get it to work properly
 			e.printStackTrace();
 		}
 
